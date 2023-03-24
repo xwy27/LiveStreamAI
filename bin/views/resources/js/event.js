@@ -19,7 +19,7 @@ regisiter("Certify_Success", function (e) {
 regisiter("VIEW", function (e) {
     let data = e;
     // TODO:
-    console.log("VIEW: " + data.toString());
+    // console.log("VIEW: " + data.toString());
 })
 
 // 进入直播间或关注直播间事件
@@ -32,7 +32,7 @@ regisiter("INTERACT_WORD", function (e) {
     if (data.data.msg_type == 2) { //个人推测，不一定准确
         console.log(time + " " + uname + " 关注直播间");
     } else {
-        console.log(data.cmd + " " + time + " " + uname + " 进入直播间");
+        // console.log(data.cmd + " " + time + " " + uname + " 进入直播间");
     }
 })
 
@@ -43,7 +43,7 @@ regisiter("ENTRY_EFFECT", function (e) {
     let timedata = new Date(data.data.trigger_time / 1000000);
     let time = timedata.toLocaleDateString() + " " + timedata.toTimeString().split(" ")[0];
     // TODO:
-    console.log(data.cmd + " " + time + " " + uname + " 进入直播间");
+    // console.log(data.cmd + " " + time + " " + uname + " 进入直播间");
 })
 
 //礼物赠送事件
@@ -56,7 +56,7 @@ regisiter("SEND_GIFT", function (e) {
     let timedata = new Date(data.data.timestamp * 1000);
     let time = timedata.toLocaleDateString() + " " + timedata.toTimeString().split(" ")[0];
     // TODO:
-    console.log(data.cmd + " " + time + " " + uname + " :" + act + " " + gift_num + " " + gift_name);
+    // console.log(data.cmd + " " + time + " " + uname + " :" + act + " " + gift_num + " " + gift_name);
 })
 
 //弹幕事件
@@ -66,6 +66,14 @@ regisiter("DANMU_MSG", function (e) {
     let timedata = new Date(data.info[9].ts * 1000);
     let time = timedata.toLocaleDateString() + " " + timedata.toTimeString().split(" ")[0];
     let text = data.info[1];
-    // TODO:
+    // TODO: 解析提问弹幕
+    if (!text.startsWith("Q:")) {
+        return;
+    }
+    text = text.substring(2).trim()
     console.log(data.cmd + " " + time + " " + uname + " :" + text);
+    chatQueue.addChat(uname, text).then(res => {})
+    .catch(err => {
+        console.error(err);
+    });
 })

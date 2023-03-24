@@ -5,15 +5,16 @@
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.2/semantic.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.2/semantic.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
     <title>TEST</title>
 </head>
 
 <body>
-    <div class="ui two column centered grid">
-        <div class="five wide column">
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
             <div class="ui labeled input">
                 <div class="ui label">
-                    房间号：
+                    房间号
                 </div>
                 <input id="room" type="text" placeholder="...">
             </div>
@@ -26,27 +27,29 @@
         </div>
     </div>
 </body>
-<script type="text/javascript" src="./decode.js"></script>
-<script type="text/javascript" src="./chatAI.js"></script>
-<script type="text/javascript" src="./event.js"></script>
-<script type="text/javascript" src="./bulletChat.js"></script>
+<script type="text/javascript" src="./js/decode.js"></script>
+<script type="text/javascript" src="./js/chat.js"></script>
+<script type="text/javascript" src="./js/event.js"></script>
+<script type="text/javascript" src="./js/bulletChat.js"></script>
 <script>
     function onStart() {
         fetch("http://localhost:3000/room?room=" + document.getElementById("room").value)
             .then(res => {
-                return res.json()
+                return res.json();
             }).then(data => {
-                console.log("房间号：" + data.roomId)
-                webSocket(data.roomId)
+                console.log("房间号：" + data.roomId);
+                webSocket(data.roomId);
             })
     }
 
     function onCancel() {
         if (ws != null) {
-            ws.close()
-            ws = null
-            console.log("退出成功")
+            ws.close();
+            ws = null;
+            chatQueue.clear();
+            speechSynthesis.cancel();
         }
+        console.log("退出成功");
     }
 </script>
 
