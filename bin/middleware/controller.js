@@ -38,11 +38,11 @@ function addMapping(router, mapping) {
  */
 function addControllers(router) {
   let files = fs.readdirSync(PATH.resolve(__dirname, '../controllers'));
-  let js_files = files.filter((f) => {
+  let jsFiles = files.filter((f) => {
     return f.endsWith('.js');
   });
 
-  for (let f of js_files) {
+  for (let f of jsFiles) {
     Logger.info(`[Import Controller] ${f}`);
     let mapping = require(PATH.resolve(__dirname, '../controllers/' + f));
     addMapping(router, mapping);
@@ -50,7 +50,7 @@ function addControllers(router) {
 }
 
 module.exports = function (dir) {
-  let controllers_dir = dir || 'controllers'; // default controller dir
-  addControllers(router, controllers_dir);
+  let controllersDir = dir || 'controllers'; // default controller dir
+  addControllers(router, controllersDir);
   return router.routes();
 };

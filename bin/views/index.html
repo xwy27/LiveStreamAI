@@ -46,7 +46,7 @@
         if (ws != null) {
             ws.close();
             ws = null;
-            chatQueue.clear();
+            taskQueue.clear();
             speechSynthesis.cancel();
         }
         console.log("退出成功");

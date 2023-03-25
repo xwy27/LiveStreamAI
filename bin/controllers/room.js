@@ -24,12 +24,12 @@ async function getRoomId(room) {
 let room = async ctx => {
     try {
         let roomId = await getRoomId(ctx.request.query["room"]);
-        Logger('resLogger').trace(`request: ${ctx.request.queryString}, roomId: ${roomId}`);
+        Logger('resLogger').info(`request: ${ctx.request.queryString}, roomId: ${roomId}`);
         ctx.response.body = {
             roomId: roomId
         };
     } catch(err) {
-        Logger('resLogger').trace(`request: ${ctx.request.queryString}, err: ${err}`);
+        Logger('errLogger').error(`request: ${ctx.request.queryString}, err: ${err}`);
     }
 
 }

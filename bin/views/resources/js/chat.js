@@ -26,11 +26,7 @@ async function speak(text, volume=1, pitch=1.1, rate=1.1) {
     });
 };
 
-async function chatAI(user, text) {
-    if (typeof user != 'string' || typeof text != 'string' || user.length <= 0 || text.length <= 0) {
-        return ""
-    }
-
+async function fetchAIUtterance(user, text) {
     const utter = await fetch("http://localhost:3000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json;charset=UTF-8" },
@@ -41,55 +37,61 @@ async function chatAI(user, text) {
     return utter["msg"];
 }
 
-class ChatQueue {
+async function doChat(parameters) {
+    const user = parameters["user"];
+    const text = parameters["text"];
+    if (typeof user != 'string' || typeof text != 'string' ||
+        user.length <= 0 || text.length <= 0) {
+        return "";
+    }
+    // fetch ai utterance
+    const utter = await fetchAIUtterance(user, text);
+    console.log("doChat", parameters, utter);
+    await speak("对于" + parameters["text"] + ", 我认为：" + utter);
+}
+
+class TaskQueue {
     constructor() {
         this.maxSize = 10;
         this.queue = [];
-        this.isProcessing = false;
+        this.isRunning = false;
     }
 
-    async doChat(user, input) {
-        const utter = await chatAI(user, input);
-        return utter;
-    }
-
-    async addChat(user, input) {
-        return new Promise((resolve, reject) => {
-            if (this.queue.length == this.maxSize) {
-                reject(Error("队列已满"));
-            }
-            const timestamp = new Date();
-            this.queue.push({ user, input, timestamp, resolve, reject });
-            this.processQueue();
-        });
+    async addTask(task, parameters) {
+        if (this.queue.length == this.maxSize) {
+            console.error(Error("队列已满"));
+            return;
+        }
+        const timestamp = new Date();
+        this.queue.push({ task, parameters, timestamp });
+        this.processQueue();
     }
 
     async processQueue() {
-        if (this.isProcessing) return;
-        if (this.queue.length == 0) return;
-        this.isProcessing = true;
-        const { user, input, timestamp, resolve, reject } = this.queue.shift();
-        // TODO: 分离fitler逻辑
-        // 丢弃消息：时间久于15s，或添加其他逻辑
-        const timeDiff = new Date() - timestamp;
-        if (this.queue.length > 0 && timeDiff >= 15000) {
-            reject(Error("超时"));
+        if (this.isRunning) return;
+        this.isRunning = true;
+        while (this.queue.length > 0) {
+            console.log("processing...");
+            const { task, parameters, timestamp } = this.queue.shift();
+            // TODO: 分离fitler逻辑
+            // 丢弃消息：时间久于15s，或添加其他逻辑
+            const timeDiff = new Date() - timestamp;
+            if (this.queue.length > 0 && timeDiff >= 15000) {
+                continue;
+            }
+            try {
+                await task(parameters);
+            } catch (error) {
+                console.error(error);
+            }
         }
-        try {
-            const response = await this.doChat(user, input)
-            await speak("对于" + input + ", 我认为：" + response);
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-        this.isProcessing = false;
+        this.isRunning = false;
     }
 
     clear() {
-        this.isProcessing = true;
+        this.isRunning = false;
         this.queue = [];
-        this.isProcessing = false;
     }
 }
 
-const chatQueue = new ChatQueue();
+const taskQueue = new TaskQueue();

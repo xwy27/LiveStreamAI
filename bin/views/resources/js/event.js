@@ -67,13 +67,13 @@ regisiter("DANMU_MSG", function (e) {
     let time = timedata.toLocaleDateString() + " " + timedata.toTimeString().split(" ")[0];
     let text = data.info[1];
     // TODO: 解析提问弹幕
-    if (!text.startsWith("Q:")) {
-        return;
-    }
-    text = text.substring(2).trim()
+    // if (!text.startsWith("Q:")) {
+    //     return;
+    // }
+    // text = text.substring(2).trim()
     console.log(data.cmd + " " + time + " " + uname + " :" + text);
-    chatQueue.addChat(uname, text).then(res => {})
-    .catch(err => {
-        console.error(err);
+    taskQueue.addTask(doChat, {
+        "user": uname,
+        "text": text
     });
 })

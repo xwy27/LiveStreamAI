@@ -6,10 +6,10 @@ const path = require('path');
 // custom middleware
 const body = require('./middleware/body');
 const router = require('./middleware/controller');
-const static_serve = require('./middleware/static');
+const staticServe = require('./middleware/static');
 
 // custom utils and configuration
-const config = require('./config/config');
+const { port, staticPath } = require('./config/config');
 const Logger = require('./utils/logger');
 
 const app = new koa();
@@ -31,8 +31,8 @@ app.use(body());
 // Add router middleware
 app.use(router());
 // Route static resources
-app.use(static_serve(path.join(__dirname, config.static_path)));
+app.use(staticServe(path.join(__dirname, staticPath)));
 
-app.listen(config.port, () => {
-  Logger('default').trace(`Server running at port:${config.port}`);
+app.listen(port, () => {
+  Logger('default').trace(`Server running at port:${port}`);
 });

@@ -104,3 +104,6 @@ dist
 .tern-port
 
 .DS_Store
+
+# key config
+bin/config/key.js
