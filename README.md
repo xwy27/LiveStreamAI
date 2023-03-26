@@ -1,11 +1,18 @@
 # LiveStreamAI
 
-基于ChatGPT的直播AI(~~新概念挖矿~~)
+基于ChatGPT的Bilibili直播AI(~~新概念挖矿~~)。
+[js版本](https://github.com/xwy27/LiveStreamAI/tree/js_env)
 
-## Requirement
+## 概览
 
-- OpenAI API Key
-- Node环境
+![structure](./assests/structure.png)
+
+
+## 依赖环境
+
+- Python>=3.8
+- 可以访问OpenAI的网络及其API Key
+- (可选)虚拟环境，如conda
 
 ## 使用说明
 
@@ -19,48 +26,69 @@ git clone https://github.com/xwy27/LiveStreamAI.git
 
 ```bash
 cd LiveStreamAI
-npm install
+pip install -r requirements.txt
 ```
 
-3. 修改配置
+### 快速体验（不接入ChatGPT）
 
-在`bin/config`目录下创建`key.js`，并将OpenAI的api key写入文件中。目录下有示例文件`key_example.js`。`可选：UP的风格，通过修改，data目录下的data.json文件中的prompt`。
+1. 修改配置
 
-4. 启动
+修改`config`目录下的`config.txt`，仅需直播间的房间号(如直播链接`https://live.bilibili.com/139?...`中的`139`为房间号)
+
+2. 启动
 
 ```bash
-npm start
+python main.py
 ```
 
-4. 使用
+3. 使用
 
-先打开直播，然后记下房间号（如直播链接`https://live.bilibili.com/139?...`中的`139`为房间号）。
-然后在浏览器访问`http://localhost:3000/index`，并将房间号输入页面，点击启动，即可抓取弹幕并完成回复。
+打开直播，程序会自动监听直播间的弹幕，并对以`Q:`开头的弹幕提问进行回复。
 
-5. 开发调试
+### 开始使用
 
-*对于开发人员，项目提供了热更新启动命令：`npm run dev`。每当你对`bin`目录下的文件进行了修改，项目会自动重启，而不必手动关闭后再启动*。
+1. 修改配置
+
+- 必须
+  修改`config`目录下的`config.txt`，包括直播间的房间号(如直播链接`https://live.bilibili.com/139?...`中的`139`为房间号)以及OpenAI的api key；将`handler/handler.py`中的`testResponseManager`替换为`openAIResponseManager`。
+- 可选
+  修改`config`目录下的`UpCharacteristic.txt`可以让ChatGPT提供不同的直播风格(等同于prompt)。
+
+2. 启动
+
+```bash
+python main.py
+```
+
+3. 使用
+
+启动后，打开直播即可。程序会自动监听直播间的弹幕，并对以`Q:`开头的弹幕提问进行回复。
 
 ## Q&A
 
-1. 为什么声音那么难听？
+1. 能否定制声音？
 
-  `简单起见，这里直接用了Web Speech API，输出受限。所以这里是一个很大的优化方向：本身可以直接在后台完成语音输出，没必要透传到前端；同时后台语音输出可以使用模型给出更风格化的语音。`
+目前的声音输出采用的是edge提供的tts功能，基于edge-tts库实现。所以在实现过程中，sound操作是分离的。在`chat/sound.py`中继承`BaseSoundManager`实现自己的声音播放类，并在`RoomHandler`中替换掉`edgeTTSSoundManager`即可。
 
-2. 为什么没有皮套？
+2. 能否自己控制回复？
 
-  `没有接触过，有能力的朋友可以来上一套。`
+同样提供自定义功能，在`chat/chat.py`中继承`BaseResponseManager`实现自己的回复生成类，并在`RoomHandler`中替换掉`TestResponseManager`即可。
 
-3. 对话历史是怎么存的？
+3. 为什么没有皮套？
 
-  `利用json文件为每个用户单独存历史对话信息。最好替换成数据库，如MySQL，穷学生电脑折腾不起了。`
+没有接触过，有能力的朋友可以来上一套。
 
-4. 还有可以做的吗？
+4. 对话历史是怎么存的？
 
-  `有很多，比如前面提到的几个问题，还有:`
-  `1.代码优化(代码里面有很多TODO，作者对JavaScript并不熟悉，很多代码写得不好)`
-  `2.弹幕流展示(方便使用查看)`
-  `3.数据文件定期清理(互动数据会不断积累，但并非都是有用的历史对话信息)`
-  `4.更合理的弹幕输入(目前采取FIFO模式并回调下一个，同时为保证实时性，回调时过滤10s前的弹幕)`
-  `5.更多的互动形式`
-  `6....`
+从ChatGPT的文档来看，调用api需要自行维护对话历史，这里通过sqlite3为每个用户单独存历史对话信息，用b站的用户名作为key，分别存储累积发送到openai的对话数据。具体可以看`utils/DB.py`。
+
+5. 还有可以做的吗？
+
+有很多，比如前面提到的几个问题，还有:
+- 代码优化(作者自己代码也写得不好，虽然尽量模块化处理了，但肯定可以优化)
+- UI展示(给用户提供一个使用界面，自行输入配置，启动和退出等)
+- 数据文件定期清理(互动数据会不断积累，但并非都是有用的历史对话信息)
+- 更合理的弹幕输入(目前采取FIFO模式并回调下一个，同时为保证实时性，回调时过滤15s前的弹幕)
+- 更多的互动形式
+- 发挥想象力，基于目前的代码做成QA机器人
+- ...
