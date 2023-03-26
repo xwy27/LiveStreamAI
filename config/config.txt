@@ -1,0 +1,2 @@
+房间号=139
+OpenAIAPIKey=TEST
