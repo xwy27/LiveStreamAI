@@ -1,6 +1,6 @@
 from bilibili_api import live
 
-from chat import chatTask, testResponseManager, edgtTTSSoundManager, openAIResponseManager
+from chat import ChatTask, testResponseManager, edgtTTSSpeakManager, openAIResponseManager
 from utils import TaskQueue
 
 class RoomHandler:
@@ -27,18 +27,18 @@ class RoomHandler:
     async def on_danmaku(self, event):
         text = event["data"]["info"][1]
         user = event["data"]["info"][2][1]
-        if text.startswith("Q:"):
+        if not text.startswith("Q:"):
             text = text[2:].strip()
             if len(text) <= 0:
                 return
             await self._danmakuQueue.addTask(
-                chatTask(
+                ChatTask(
                     user=user,
                     text=text,
-                    # custom responseManager and soundManager can be replaced
-                    # refer to chat/chat.py and chat/sound.py
+                    # custom ResponseManager and SpeakManager can be replaced
+                    # refer to chat/ResponseManager.py and chat/SpeakManager.py
                     responseManager=testResponseManager,
-                    soundManager=edgtTTSSoundManager,
+                    speakManager=edgtTTSSpeakManager,
                 ),
             )
-            print(f"[{self.room}] - {user}: {text}")
+            print(f"[{self.room.room_display_id}] {user}: {text}")

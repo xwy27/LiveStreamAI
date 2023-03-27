@@ -4,7 +4,7 @@ from io import BytesIO
 import edge_tts
 import pygame
 
-class BaseSoundManager(ABC):
+class BaseSpeakManager(ABC):
     def __init__(self) -> None:
         super().__init__()
 
@@ -13,7 +13,7 @@ class BaseSoundManager(ABC):
         raise NotImplementedError("子类必须实现该方法")
 
 
-class EdgeTTSSoundManager(BaseSoundManager):
+class EdgeTTSSpeakManager(BaseSpeakManager):
     def __init__(self) -> None:
         pass
 
@@ -38,4 +38,4 @@ class EdgeTTSSoundManager(BaseSoundManager):
         sound.play()
         pygame.time.wait(int(sound.get_length() * 1000))
         pygame.quit()
-edgtTTSSoundManager = EdgeTTSSoundManager()
+edgtTTSSpeakManager = EdgeTTSSpeakManager()

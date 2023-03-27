@@ -3,6 +3,11 @@
 基于ChatGPT的Bilibili直播AI(~~新概念挖矿~~)。
 [js版本](https://github.com/xwy27/LiveStreamAI/tree/js_env)
 
+### 发电一下
+
+有帮助的话，可以zfb请吃包辣条🐶
+<img width="210px"  src="./assests/zfb.png">
+
 ## 概览
 
 ![structure](./assests/structure.png)
@@ -68,11 +73,11 @@ python main.py
 
 1. 能否定制声音？
 
-目前的声音输出采用的是edge提供的tts功能，基于edge-tts库实现。所以在实现过程中，sound操作是分离的。在`chat/sound.py`中继承`BaseSoundManager`实现自己的声音播放类，并在`RoomHandler`中替换掉`edgeTTSSoundManager`即可。
+目前的声音输出采用的是edge提供的tts功能，基于edge-tts库实现。所以在实现过程中，sound操作是分离的。在`chat/SpeakManager.py`中继承`BaseSpeakManager`实现自己的声音播放类，并在`RoomHandler`中替换掉`edgeTTSSpeakManager`即可。
 
 2. 能否自己控制回复？
 
-同样提供自定义功能，在`chat/chat.py`中继承`BaseResponseManager`实现自己的回复生成类，并在`RoomHandler`中替换掉`TestResponseManager`即可。
+同样提供自定义功能，在`chat/RespnseManager.py`中继承`BaseResponseManager`实现自己的回复生成类，并在`RoomHandler`中替换掉`TestResponseManager`即可。
 
 3. 为什么没有皮套？
 
@@ -86,9 +91,10 @@ python main.py
 
 有很多，比如前面提到的几个问题，还有:
 - 代码优化(作者自己代码也写得不好，虽然尽量模块化处理了，但肯定可以优化)
-- UI展示(给用户提供一个使用界面，自行输入配置，启动和退出等)
+- **UI展示**(给用户提供一个使用界面，自行输入配置，启动和退出等)
 - 数据文件定期清理(互动数据会不断积累，但并非都是有用的历史对话信息)
-- 更合理的弹幕输入(目前采取FIFO模式并回调下一个，同时为保证实时性，回调时过滤15s前的弹幕)
+- **设置优先弹幕**(新建`PriorityTaskQueues`并且持有多个`TaskQueue`来区分优先级，执行时从优先级高到低即可)
+- **更合理的弹幕输入**(目前采取FIFO模式并回调下一个，同时为保证实时性，回调时过滤15s前的弹幕。可以考虑抽离`filter`，初步筛选结合互动限制)
 - 更多的互动形式
 - 发挥想象力，基于目前的代码做成QA机器人
 - ...

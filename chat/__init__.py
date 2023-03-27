@@ -1,2 +1,3 @@
-from .chat import chatTask, testResponseManager, openAIResponseManager
-from .sound import edgtTTSSoundManager
+from .Chat import ChatTask
+from .ResponseManager import testResponseManager, openAIResponseManager
+from .SpeakManager import edgtTTSSpeakManager
