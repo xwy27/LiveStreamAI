@@ -27,7 +27,7 @@ class RoomHandler:
     async def on_danmaku(self, event):
         text = event["data"]["info"][1]
         user = event["data"]["info"][2][1]
-        if not text.startswith("Q:"):
+        if text.startswith("Q:"):
             text = text[2:].strip()
             if len(text) <= 0:
                 return

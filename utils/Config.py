@@ -7,9 +7,9 @@ class Config(object):
 
         CUR_DIR = os.path.dirname(os.path.abspath(__file__))
         # 读取配置文件
-        filePath = os.path.join(CUR_DIR, "../config/config.txt")
+        filePath = os.path.join(CUR_DIR, "../config/Config.txt")
         if not os.path.exists(filePath):
-            print("缺少配置文件: config.txt")
+            print("缺少配置文件: Config.txt")
             exit(-1)
         with open(filePath, 'r') as f:
             for line in f.readlines():
