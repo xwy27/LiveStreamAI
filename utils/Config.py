@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 
 class Config(object):
@@ -11,7 +12,7 @@ class Config(object):
         if not os.path.exists(filePath):
             print("缺少配置文件: Config.txt")
             exit(-1)
-        with open(filePath, 'r') as f:
+        with open(filePath, "r", encoding="utf-8") as f:
             for line in f.readlines():
                 data = line.strip()
                 if len(data) == 0:
@@ -32,7 +33,7 @@ class Config(object):
             print("缺少配置文件: UpCharacteristic.txt")
             exit(-1)
         self.config["UpCharacteristic"] = []
-        with open(filePath, 'r') as f:
+        with open(filePath, "r", encoding="utf-8") as f:
             for line in f.readlines():
                 data = line.strip()
                 if len(data) == 0:

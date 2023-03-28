@@ -1,3 +1,3 @@
 from .Chat import ChatTask
-from .ResponseManager import testResponseManager, openAIResponseManager
-from .SpeakManager import edgtTTSSpeakManager
+from .ResponseManager import responseManager
+from .SpeakManager import speakManager

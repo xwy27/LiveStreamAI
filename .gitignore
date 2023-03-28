@@ -37,5 +37,9 @@ pip-selfcheck.json
 .DS_Store
 
 # db file
-history.db
-history.db-journal
+*.db
+*.db-journal
+
+# chatterbot
+*.sqlite3
+*.pickle
