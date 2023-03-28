@@ -8,7 +8,7 @@ backports.zoneinfo==0.2.1
 beautifulsoup4==4.11.2
 bilibili-api-python==15.3.1
 Brotli==1.0.9
-certifi @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_477u68wvzm/croot/certifi_1671487773341/work/certifi
+certifi==2022.12.7
 charset-normalizer==3.1.0
 colorama==0.4.6
 edge-tts==6.1.3

@@ -1,11 +1,9 @@
+import os
 import json
 import copy
 from abc import ABC, abstractmethod
 
-import openai
-
 from utils import config
-from utils import historyDB
 
 class BaseResponseManager(ABC):
     ''' 对话响应生成基类 '''
@@ -23,12 +21,7 @@ class TestResponseManager(BaseResponseManager):
     async def getUtter(self, user, text) -> str:
         message = {"role": "assitante", "content": "测试返回"}
         return f"对于{text}，我认为{message['content']}"
-testResponseManager = TestResponseManager()
 
-# Up 性格 prompt
-UpCharacteristic = config.getOrDefault("UpCharacteristic", [])
-# openai 认证
-openai.api_key = config.getOrDefault("OpenAIAPIKey", "TEST")
 class OpenAIResponseManager(BaseResponseManager):
     def __init__(self) -> None:
         super().__init__()
@@ -54,4 +47,41 @@ class OpenAIResponseManager(BaseResponseManager):
         # save history
         messages.append(message)
         return f"对于{text}，我认为{message['content']}"
-openAIResponseManager = OpenAIResponseManager()
+
+class ChatterBotResponseManager(BaseResponseManager):
+    def __init__(self) -> None:
+        import chatterbot
+        # 获取模型数据库路径
+        CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+        database_uri = os.path.abspath(os.path.join(CUR_DIR, "../ChatterBot/chatterbot.sqlite3"))
+        self.chatbot = chatterbot.ChatBot(
+            "ChatBot", # Name of the chatbot
+            storage_adapter="chatterbot.storage.SQLStorageAdapter",
+            database_uri=f"sqlite:///{database_uri}"
+        )
+        super().__init__()
+
+    async def getUtter(self, user, text) -> str:
+        # TODO: user history
+        return f"对于{text}，我认为{self.chatbot.get_response(text).text}"
+
+''' 继承回复生成基类后，在这里添加载入代码
+    修改config/config.txt中的 ResponseManager 配置即可使用自定义声音播放
+    可参考：ChatterBotResponseManager 使用方式
+'''
+responseManager = None
+chosen = config.getOrDefault("ResponseManager", "TestResponseManager")
+if chosen == "TestResponseManager":
+    responseManager = TestResponseManager()
+elif chosen == "ChatterBotResponseManager":
+    responseManager = ChatterBotResponseManager()
+elif chosen == "OpenAIResponseManager":
+    import openai
+    from utils import historyDB
+    # Up 性格 prompt
+    UpCharacteristic = config.getOrDefault("UpCharacteristic", [])
+    # openai 认证
+    openai.api_key = config.getOrDefault("OpenAIAPIKey", "TEST")
+    responseManager = OpenAIResponseManager()
+else:
+    pass

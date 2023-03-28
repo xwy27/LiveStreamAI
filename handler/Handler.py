@@ -1,6 +1,6 @@
 from bilibili_api import live
 
-from chat import ChatTask, testResponseManager, edgtTTSSpeakManager, openAIResponseManager
+from chat import ChatTask, responseManager, speakManager
 from utils import TaskQueue
 
 class RoomHandler:
@@ -27,6 +27,7 @@ class RoomHandler:
     async def on_danmaku(self, event):
         text = event["data"]["info"][1]
         user = event["data"]["info"][2][1]
+        # 响应弹幕的模式为，Q:text，针对text作出回复
         if text.startswith("Q:"):
             text = text[2:].strip()
             if len(text) <= 0:
@@ -35,10 +36,8 @@ class RoomHandler:
                 ChatTask(
                     user=user,
                     text=text,
-                    # custom ResponseManager and SpeakManager can be replaced
-                    # refer to chat/ResponseManager.py and chat/SpeakManager.py
-                    responseManager=testResponseManager,
-                    speakManager=edgtTTSSpeakManager,
+                    responseManager=responseManager,
+                    speakManager=speakManager,
                 ),
             )
             print(f"[{self.room.room_display_id}] {user}: {text}")
